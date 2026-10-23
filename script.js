@@ -53,5 +53,23 @@ function clearDisplay(){
 }
 
 function calculate(){
-    if_
+    if(previousInput === "" || currentInput === "") return;
+    let result;
+    const num1 = parseFloat(previousInput);
+    const num2 = parseFloat(previousInput);
+
+    switch(operador){
+        case "+": result = num1 + num2; break;
+        case "-": result = num1 - num2; break;
+        case "*": result = num1 * num2; break;
+        case "/": result = num1 / num2; break;
+        default: return;
+    }
+
+    currentInput = result; 
+    previousInput = "";
+    operator = "";
+
 }
+
+
