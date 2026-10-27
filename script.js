@@ -1,75 +1,93 @@
-const display = document.getElementById("display")
-const buttons = document.getElementById("btn")
+
+const display = document.getElementById("display");
+const buttons = document.querySelectorAll(".btn");
 
 let currentInput = "";
 let previousInput = "";
-let operador = "";
+let operator = "";
 let result = 0;
-let shoudResetDisplay = "";
+let shouldResetDisplay = false;
 
 buttons.forEach(button => {
-    const value = button.dataset.value;
-    if(!value){
-        if(button.id === "clear") clearDisplay();
-        if(button.id === "calculate") calculate();
-        return;
-        
-    }
+    button.addEventListener("click", () => {
+        const value = button.dataset.value;
 
-    if([!"+", "-", "/"].includes(value)) {
-        setOperator(value);
+        if (!value) {
+            if (button.id === "clear") clearDisplay();
+            if (button.id === "calculate") calculate();
+            return;
+        }
 
-    } else {
-        appendNumber(value);
-    };
-
+        if (["+", "-", "*", "/"].includes(value)) {
+            setOperator(value);
+        } else {
+            appendNumber(value);
+        }
+    });
 });
 
 function updateDisplay() {
-    display.innerText = currentInput || "0"
-
+    display.innerText = currentInput || "0";
 }
 
-function appendNumber(number){
-    if(currentInput.includes(".") && number === "." return);
+function appendNumber(number) {
+    if (shouldResetDisplay) {
+        currentInput = "";
+        shouldResetDisplay = false;
+    }
+
+    if (currentInput.includes(".") && number === ".") return;
+
     currentInput += number;
     updateDisplay();
-
 }
 
 function setOperator(op) {
-    if (currentInput ==="") return;
-    operador = op;
-    previousInput = currentInput;
-    currentInput ="";
+    if (currentInput === "") return;
 
+    if (previousInput !== "" && !shouldResetDisplay) {
+        calculate();
+    }
+
+    operator = op;
+    previousInput = currentInput;
+    currentInput = "";
 }
 
-function clearDisplay(){
+function clearDisplay() {
     currentInput = "";
     previousInput = "";
-    operador ="";
+    operator = "";
+    result = 0;
+    shouldResetDisplay = false;
     updateDisplay();
 }
 
-function calculate(){
-    if(previousInput === "" || currentInput === "") return;
-    let result;
-    const num1 = parseFloat(previousInput);
-    const num2 = parseFloat(previousInput);
+function calculate() {
+    if (previousInput === "") return;
 
-    switch(operador){
-        case "+": result = num1 + num2; break;
-        case "-": result = num1 - num2; break;
-        case "*": result = num1 * num2; break;
-        case "/": result = num1 / num2; break;
-        default: return;
+    const num1 = parseFloat(previousInput);
+    const num2 = parseFloat(currentInput) || 0;
+
+    switch (operator) {
+        case "+":
+            result = num1 + num2;
+            break;
+        case "-":
+            result = num1 - num2;
+            break;
+        case "*":
+            result = num1 * num2;
+            break;
+        case "/":
+            result = num1 / num2;
+            break;
+        default:
+            return;
     }
 
-    currentInput = result; 
-    previousInput = "";
-    operator = "";
-
+    currentInput = result.toString();
+    previousInput = result.toString();
+    shouldResetDisplay = true;
+    updateDisplay();
 }
-
-
